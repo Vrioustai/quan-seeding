@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrustBite — Demo Report | Day 06 Hackathon</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap');
+
+    :root {
+      --bg:       #0f1117;
+      --surface:  #1e2130;
+      --border:   rgba(255,255,255,0.08);
+      --accent:   #FF5722;
+      --accent2:  #88C0D0;
+      --text:     #ECEFF4;
+      --muted:    #B0BEC5;
+      --green:    #A3BE8C;
+      --yellow:   #EBCB8B;
+      --red:      #BF616A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.65;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #1A1D24 0%, #2D323F 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px 36px;
+      text-align: center;
+    }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,87,34,.15);
+      border: 1px solid rgba(255,87,34,.4);
+      color: var(--accent);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      color: var(--text);
+    }
+    header h1 span { color: var(--accent); }
+    header p.tagline {
+      color: var(--accent2);
+      font-size: 1.15rem;
+      margin-top: 8px;
+    }
+    header p.sub {
+      color: var(--muted);
+      max-width: 620px;
+      margin: 14px auto 0;
+      font-size: .93rem;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    .meta-chip {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 16px;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    .meta-chip strong { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    section { margin-bottom: 56px; }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 22px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(255,87,34,.35);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 .icon { font-size: 1.3rem; }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--accent2);
+      margin-bottom: 10px;
+    }
+
+    p { color: var(--muted); margin-bottom: 12px; }
+    p strong { color: var(--text); }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 18px;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── PROBLEM CANVAS ── */
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media(max-width:600px){ .canvas-grid { grid-template-columns: 1fr; } }
+    .canvas-cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+    .canvas-cell.full { grid-column: 1 / -1; }
+    .canvas-cell h3 { margin-bottom: 8px; }
+    .canvas-cell ul { padding-left: 18px; color: var(--muted); }
+    .canvas-cell ul li { margin-bottom: 6px; }
+
+    /* ── FLOW TIMELINE ── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .flow::before {
+      content: '';
+      position: absolute;
+      left: 21px; top: 22px; bottom: 22px;
+      width: 2px;
+      background: rgba(255,87,34,.25);
+    }
+    .flow-step {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      padding: 14px 0;
+    }
+    .step-num {
+      width: 42px; height: 42px;
+      min-width: 42px;
+      background: rgba(255,87,34,.15);
+      border: 2px solid rgba(255,87,34,.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--accent);
+      z-index: 1;
+    }
+    .step-body h4 { color: var(--text); font-size: .97rem; font-weight: 600; }
+    .step-body p { font-size: .88rem; margin: 4px 0 0; }
+
+    /* ── AI FLOW ── */
+    .ai-block {
+      background: linear-gradient(135deg, rgba(136,192,208,.08), rgba(255,87,34,.06));
+      border: 1px solid rgba(136,192,208,.2);
+      border-radius: 14px;
+      padding: 22px 26px;
+      margin-bottom: 14px;
+    }
+    .ai-block .label {
+      display: inline-block;
+      background: rgba(136,192,208,.15);
+      color: var(--accent2);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    /* ── SCORE CRITERIA ── */
+    .criteria-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+    .criteria-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: rgba(255,255,255,.04);
+      color: var(--accent2);
+      font-weight: 600;
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .criteria-table td {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      vertical-align: top;
+    }
+    .criteria-table td:first-child { color: var(--text); font-weight: 600; }
+    .criteria-table tr:hover td { background: rgba(255,255,255,.02); }
+
+    .stars {
+      color: var(--yellow);
+      letter-spacing: 2px;
+    }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .93rem;
+      color: var(--muted);
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check-icon {
+      width: 22px; height: 22px; min-width: 22px;
+      background: rgba(163,190,140,.15);
+      border: 2px solid rgba(163,190,140,.4);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      font-size: .8rem;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    /* ── AUGMENT vs AUTOMATE ── */
+    .aug-auto {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media(max-width:600px){ .aug-auto { grid-template-columns: 1fr; } }
+    .aug-card, .auto-card {
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+    .aug-card {
+      background: rgba(163,190,140,.08);
+      border: 1px solid rgba(163,190,140,.2);
+    }
+    .auto-card {
+      background: rgba(136,192,208,.08);
+      border: 1px solid rgba(136,192,208,.2);
+    }
+    .aug-card h3 { color: var(--green); }
+    .auto-card h3 { color: var(--accent2); }
+
+    /* ── FAILURE MODES ── */
+    .failure-card {
+      background: rgba(191,97,106,.08);
+      border: 1px solid rgba(191,97,106,.2);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px 16px;
+      align-items: start;
+    }
+    .failure-icon { font-size: 1.4rem; }
+    .failure-body h4 { color: var(--red); font-size: .95rem; }
+    .failure-body p { font-size: .88rem; margin-top: 4px; }
+    .mitigation {
+      grid-column: 2;
+      background: rgba(255,255,255,.04);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: .83rem;
+      color: var(--green);
+    }
+    .mitigation strong { display: block; color: var(--text); margin-bottom: 2px; }
+
+    /* ── TECH STACK ── */
+    .tech-pill {
+      display: inline-block;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: .82rem;
+      color: var(--muted);
+      margin: 4px;
+    }
+
+    /* ── VERDICT BANNER ── */
+    .verdict {
+      background: linear-gradient(135deg, rgba(255,87,34,.12), rgba(136,192,208,.08));
+      border: 1px solid rgba(255,87,34,.3);
+      border-radius: 14px;
+      padding: 28px 32px;
+      text-align: center;
+    }
+    .verdict h2 {
+      font-size: 1.8rem;
+      border: none;
+      padding: 0;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .verdict p { max-width: 540px; margin: 0 auto; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .8rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Zone 3 · Food &amp; Local Delivery</div>
+  <h1>🕵️‍♂️ Trust<span>Bite</span></h1>
+  <p class="tagline">Thám Tử AI Phân Tích Review Quán Ăn</p>
+  <p class="sub">
+    Phát hiện đánh giá ảo (seeding) trên Google Maps bằng mô hình Machine Learning
+    kết hợp LLM Agent — giúp người dùng ăn thật, không bị lừa.
+  </p>
+  <div class="meta-row">
+    <div class="meta-chip"><strong>Track:</strong> Food &amp; Local Delivery</div>
+    <div class="meta-chip"><strong>App tham chiếu:</strong> ShopeeFood / Google Maps</div>
+    <div class="meta-chip"><strong>Ngày:</strong> 04/06/2026</div>
+    <div class="meta-chip"><strong>Lớp:</strong> Batch 02 · Day 06</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 1. PRODUCT CANVAS                             -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="canvas">
+    <h2><span class="icon">🗺</span> 1. Product Canvas</h2>
+
+    <div class="canvas-grid">
+      <!-- Painpoint -->
+      <div class="canvas-cell">
+        <h3>😤 Painpoint của người dùng</h3>
+        <ul>
+          <li>Quán "hot" trên TikTok nhưng đồ ăn thực tế tệ — do <strong>review 5 sao ảo</strong> chạy bởi dịch vụ seeding thuê ngoài.</li>
+          <li>Google Maps đang có hàng triệu review nhưng không có bộ lọc chống seeding native.</li>
+          <li>Người dùng không có cách nhanh để phân biệt review thật / review ảo trước khi quyết định đến.</li>
+        </ul>
+      </div>
+
+      <!-- Target users -->
+      <div class="canvas-cell">
+        <h3>👥 Người dùng mục tiêu</h3>
+        <ul>
+          <li><strong>Foodie thành thị</strong> muốn tìm quán ngon đáng tin ở Hà Nội</li>
+          <li><strong>Reviewer thực phẩm / KOC</strong> cần xác minh uy tín địa điểm trước khi collab</li>
+          <li><strong>Chủ quán cạnh tranh lành mạnh</strong> muốn tố cáo đối thủ dùng seeding</li>
+        </ul>
+      </div>
+
+      <!-- Solution -->
+      <div class="canvas-cell">
+        <h3>💡 Giải pháp</h3>
+        <ul>
+          <li>Crawl review từ Google Maps qua Apify API theo tên quán</li>
+          <li>Phân tích văn bản + hành vi reviewer bằng <strong>Ensemble ML</strong> (SBERT + Random Forest, TF-IDF + XGBoost)</li>
+          <li><strong>LLM Agent</strong> (Claude / Gemini) đưa ra đánh giá rủi ro và gợi ý quán thay thế</li>
+          <li>Giao diện Streamlit đơn giản — nhập tên quán → nhận kết quả trong &lt;30 giây</li>
+        </ul>
+      </div>
+
+      <!-- Value prop -->
+      <div class="canvas-cell">
+        <h3>🏆 Lợi thế cốt lõi</h3>
+        <ul>
+          <li>Kết hợp hai mô hình ML độc lập → ensemble giảm false positive</li>
+          <li>LLM thay thế logic if/else cứng bằng <strong>reasoning linh hoạt</strong> theo ngữ cảnh</li>
+          <li>Cache 24h — crawl 1 lần, dùng nhiều lần trong ngày</li>
+          <li>Realtime: quét quán mới ngoài dataset có sẵn</li>
+        </ul>
+      </div>
+
+      <!-- Metrics -->
+      <div class="canvas-cell full">
+        <h3>📊 Số liệu chứng minh bài toán tồn tại</h3>
+        <ul>
+          <li>Dataset gốc: reviews Google Maps Hà Nội — nhiều quán có tỷ lệ review bị gắn cờ &gt;30%</li>
+          <li>Mô hình ensemble: precision/recall cao hơn từng mô hình đơn lẻ trên test set</li>
+          <li>"Perfect from new reviewer" (5 sao từ tài khoản mới toanh) là signal mạnh nhất</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 2. AI CHẠY THẬT TRONG ÍT NHẤT 1 FLOW         -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="ai-flow">
+    <h2><span class="icon">🤖</span> 2. AI Chạy Thật — 3 Điểm Tích Hợp</h2>
+
+    <div class="ai-block">
+      <div class="label">AI Flow 1 · Vietnamese SBERT Embedding</div>
+      <h3>Mã hoá ngữ nghĩa văn bản tiếng Việt</h3>
+      <p>
+        Mô hình <strong>keepitreal/vietnamese-sbert</strong> (HuggingFace) chuyển mỗi review thành vector 768 chiều.
+        Vector ngữ nghĩa này bắt được sự khác biệt giữa "<em>quán ngon lắm recommend</em>" thật và
+        "<em>quán ngon lắm recommend</em>" ảo thông qua các đặc trưng hành vi kết hợp.
+        <strong>Không phải rule-based</strong> — mô hình học từ dữ liệu thật.
+      </p>
+    </div>
+
+    <div class="ai-block">
+      <div class="label">AI Flow 2 · Ensemble ML Classifier</div>
+      <h3>Phân loại review ảo/thật bằng Ensemble</h3>
+      <p>
+        Hai mô hình chạy song song:
+        <strong>SBERT + Random Forest</strong> (semantic) và
+        <strong>TF-IDF + XGBoost</strong> (lexical + behavioral features — text_len, emoji_count,
+        reviewer_review_count, perfect_from_new, v.v.).
+        Xác suất từ hai mô hình được lấy trung bình → Ensemble. Ngưỡng mặc định 50%.
+      </p>
+    </div>
+
+    <div class="ai-block">
+      <div class="label">AI Flow 3 · LLM Agent (Claude / Gemini)</div>
+      <h3>Tư vấn rủi ro và gợi ý thay thế bằng LLM</h3>
+      <p>
+        Sau khi ML cho ra tỷ lệ seeding, <strong>LLM Agent</strong> nhận đầu vào gồm tên quán + tỷ lệ + quán thay thế
+        và thực hiện reasoning 2 bước: (1) xác nhận đây có phải quán ăn không, (2) đưa ra đánh giá rủi ro
+        &amp; lời khuyên. Fallback thứ tự: Claude → Gemini → mock response. Không hard-code kết quả.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 3. DEMO END-TO-END (HAPPY CASE + ERROR CASE)  -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="demo">
+    <h2><span class="icon">▶</span> 3. Demo End-to-End</h2>
+
+    <h3 style="color:var(--green); margin-bottom:16px;">✅ Happy Case — Quán có nhiều review ảo</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Người dùng chọn quán trong sidebar hoặc nhập quán mới</h4>
+          <p>Dropdown từ dataset sẵn có, hoặc nhập tên → Crawl &amp; Phân tích qua Apify.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Nhấn "🚀 Thám Tử AI, Quét Ngay!"</h4>
+          <p>Progress animation mô phỏng pipeline: extract → SBERT encode → normalize → Random Forest classify.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Ensemble ML trả về tỷ lệ seeding</h4>
+          <p>Ví dụ: 38% review bị gắn cờ → vượt ngưỡng 20% → cảnh báo đỏ.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Hệ thống tìm quán thay thế có fake_ratio &lt; 15%</h4>
+          <p>Sort tất cả quán khác theo fake_ratio tăng dần, chọn quán đáng tin nhất làm gợi ý.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>LLM Agent phân tích &amp; đưa ra lời khuyên</h4>
+          <p>Claude/Gemini nhận prompt với tên quán, tỷ lệ và quán thay thế → trả về reasoning dạng Markdown.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Top 5 review nghi vấn được hiển thị kèm xác suất</h4>
+          <p>Mỗi card có: rating, nội dung review, mã reviewer, tổng số review đã viết, fake_prob %.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="color:var(--red); margin-top:28px; margin-bottom:16px;">⚠️ Error Case — Xử lý ngoại lệ</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Nhập tên không phải quán ăn</h3>
+        <p><strong>Chặn trước ML</strong> bằng <code>validate_restaurant_name()</code> — two-tier gate chạy ngay khi nhấn Crawl:</p>
+        <p>① Structural: từ chối nếu &lt;3 ký tự hoặc không có chữ cái. ② Blocklist: từ chối nếu chứa từ khóa loại địa điểm (khách sạn, bệnh viện, ngân hàng, spa, sân bay…). Hiển thị <code>st.error()</code> ngay lập tức, không gọi Apify hay ML.</p>
+        <p>LLM Step 1 guard vẫn còn như lớp bảo vệ thứ hai cho các trường hợp mơ hồ.</p>
+      </div>
+      <div class="card">
+        <h3>Crawl thất bại / Apify timeout</h3>
+        <p>Khối <code>try/except</code> bắt lỗi crawl và hiển thị thông báo đỏ với nội dung lỗi cụ thể. App không crash. Cache 24h giảm xác suất lỗi lặp lại.</p>
+      </div>
+      <div class="card">
+        <h3>Không có API key LLM</h3>
+        <p>Fallback 3 tầng: Claude → Gemini → mock response. Mock trả về phân tích cứng dựa trên ngưỡng 20%. App luôn có output cho người dùng.</p>
+      </div>
+      <div class="card">
+        <h3>Model / data file bị thiếu</h3>
+        <p><code>st.error()</code> hiển thị lỗi rõ ràng + <code>st.stop()</code> dừng app an toàn thay vì crash với traceback.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 4. AUGMENT vs AUTOMATE                        -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="augment-automate">
+    <h2><span class="icon">⚖️</span> 4. Augment hay Automate?</h2>
+    <p><strong>Trả lời: Augment</strong> — AI tăng cường khả năng phán đoán của người dùng, không thay thế quyết định.</p>
+
+    <div class="aug-auto">
+      <div class="aug-card">
+        <h3>✅ Augment (đang làm)</h3>
+        <ul style="padding-left:16px; color:var(--muted);">
+          <li style="margin-bottom:6px;">Người dùng vẫn quyết định có đến quán không — AI chỉ cung cấp thông tin mà mắt thường không thấy được</li>
+          <li style="margin-bottom:6px;">LLM Agent giải thích lý do, không chỉ cho ra nhãn True/False</li>
+          <li style="margin-bottom:6px;">Slider ngưỡng cho phép người dùng tự điều chỉnh độ nhạy</li>
+          <li>Hiển thị top 5 review cụ thể để người dùng tự đối chiếu</li>
+        </ul>
+      </div>
+      <div class="auto-card">
+        <h3>🔮 Automate (hướng tương lai)</h3>
+        <ul style="padding-left:16px; color:var(--muted);">
+          <li style="margin-bottom:6px;">Tự động gắn badge "Suspicious Reviews" trực tiếp trên listing ShopeeFood</li>
+          <li style="margin-bottom:6px;">Cron job crawl &amp; phân tích toàn bộ quán mới mỗi ngày</li>
+          <li>Tự động báo cáo đến platform khi phát hiện seeding quy mô lớn</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 5. FAILURE MODES & MITIGATIONS                -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="failures">
+    <h2><span class="icon">🛡</span> 5. Failure Modes Chính</h2>
+
+    <div class="failure-card">
+      <div class="failure-icon">🎭</div>
+      <div class="failure-body">
+        <h4>False Positive — Review thật bị gắn cờ ảo</h4>
+        <p>Reviewer mới (ít lịch sử) viết review 5 sao chân thành có thể bị mô hình nghi ngờ do feature "perfect_from_new".</p>
+      </div>
+      <div class="mitigation">
+        <strong>Mitigation:</strong>
+        Ensemble giảm false positive hơn single model. Người dùng có thể tăng ngưỡng slider. Top-5 evidence cho phép người dùng tự kiểm tra.
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="failure-icon">🌐</div>
+      <div class="failure-body">
+        <h4>Crawl thất bại / Apify rate limit</h4>
+        <p>Apify API có giới hạn số lần gọi theo plan. Quán không có đủ review trên Maps sẽ trả về dataset rỗng.</p>
+      </div>
+      <div class="mitigation">
+        <strong>Mitigation:</strong>
+        Cache JSON 24h giảm số lần gọi API. Try/except bắt lỗi và hiển thị message rõ ràng. Dataset offline luôn hoạt động độc lập.
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="failure-icon">🚫</div>
+      <div class="failure-body">
+        <h4>Input không hợp lệ — non-restaurant trước khi ML chạy</h4>
+        <p>User nhập chuỗi ngẫu nhiên, tên khách sạn, bệnh viện, v.v. vào ô crawl realtime → ML sẽ cho ra kết quả vô nghĩa.</p>
+      </div>
+      <div class="mitigation">
+        <strong>Mitigation (đã triển khai):</strong>
+        <code>validate_restaurant_name()</code> chạy <em>trước</em> khi gọi Apify hoặc ML. Hai tier: structural (độ dài, có chữ cái) + keyword blocklist (khách sạn, bệnh viện, ngân hàng, spa…). Chặn ngay với <code>st.error()</code>, không tốn API quota.
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="failure-icon">🤖</div>
+      <div class="failure-body">
+        <h4>LLM hallucination</h4>
+        <p>LLM có thể đề xuất quán thay thế không tồn tại hoặc diễn giải sai ngữ cảnh.</p>
+      </div>
+      <div class="mitigation">
+        <strong>Mitigation:</strong>
+        Quán gợi ý đến từ tính toán ML trên data thật — LLM chỉ paraphrase. Prompt 2-bước giữ LLM Step 1 guard như lớp dự phòng cho edge case mà heuristic bỏ sót.
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="failure-icon">🔄</div>
+      <div class="failure-body">
+        <h4>Model drift — seeder thay đổi chiến thuật</h4>
+        <p>Khi dịch vụ seeding học cách né model (review dài hơn, reviewer có lịch sử hơn), độ chính xác giảm dần.</p>
+      </div>
+      <div class="mitigation">
+        <strong>Mitigation:</strong>
+        Cần retrain định kỳ với data mới. Ensemble giúp giảm tốc độ drift so với single model.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 6. SCORING CRITERIA SELF-ASSESSMENT           -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="scoring">
+    <h2><span class="icon">📋</span> 6. Tự Đánh Giá — 4 Tiêu Chí Chấm Điểm</h2>
+
+    <table class="criteria-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Tiêu chí</th>
+          <th>Tự đánh giá</th>
+          <th>Chứng minh</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Demo quality</td>
+          <td><span class="stars">★★★★</span></td>
+          <td>App Streamlit chạy được end-to-end. Có dataset offline làm backup. Realtime crawl qua Apify nếu mạng ổn.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Presentation</td>
+          <td><span class="stars">★★★★</span></td>
+          <td>Luồng demo rõ: Painpoint → Solution → Live demo → Q&amp;A. Mỗi thành viên được phân công phần trình bày.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Problem–solution fit</td>
+          <td><span class="stars">★★★★★</span></td>
+          <td>Bài toán review ảo trên Google Maps là pain point thực tế, dễ hiểu với mọi người. Dataset thật từ Hà Nội.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>AI product thinking</td>
+          <td><span class="stars">★★★★★</span></td>
+          <td>AI là lõi sản phẩm (không phải decoration): SBERT semantic encoding + Ensemble ML + LLM Agent reasoning. 3 điểm AI tích hợp thực sự.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 7. TECH STACK                                  -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="tech">
+    <h2><span class="icon">⚙️</span> 7. Tech Stack</h2>
+    <div class="card">
+      <h3>Frontend / UI</h3>
+      <div>
+        <span class="tech-pill">Streamlit</span>
+        <span class="tech-pill">Custom CSS (dark mode)</span>
+        <span class="tech-pill">Google Fonts (Inter + Outfit)</span>
+      </div>
+
+      <h3 style="margin-top:18px;">Machine Learning</h3>
+      <div>
+        <span class="tech-pill">sentence-transformers (SBERT)</span>
+        <span class="tech-pill">keepitreal/vietnamese-sbert</span>
+        <span class="tech-pill">scikit-learn (Random Forest)</span>
+        <span class="tech-pill">XGBoost</span>
+        <span class="tech-pill">TF-IDF Vectorizer</span>
+        <span class="tech-pill">scipy (sparse hstack)</span>
+        <span class="tech-pill">joblib (model serialization)</span>
+      </div>
+
+      <h3 style="margin-top:18px;">LLM / AI API</h3>
+      <div>
+        <span class="tech-pill">Anthropic Claude (claude-opus-4-8)</span>
+        <span class="tech-pill">Google Gemini (gemini-2.5-flash)</span>
+        <span class="tech-pill">Mock fallback</span>
+      </div>
+
+      <h3 style="margin-top:18px;">Data &amp; Crawling</h3>
+      <div>
+        <span class="tech-pill">Apify API (Google Maps crawler)</span>
+        <span class="tech-pill">pandas</span>
+        <span class="tech-pill">numpy</span>
+        <span class="tech-pill">JSON cache (24h TTL)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- 8. CHECKLIST TRƯỚC 16:00                      -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="checklist">
+    <h2><span class="icon">✅</span> 8. Checklist Trước 16:00</h2>
+    <ul class="checklist">
+      <li>
+        <div class="check-icon">✓</div>
+        <span><strong>Prototype chạy được</strong> — Streamlit app hoạt động với dataset offline. Backup video/screenshots sẵn sàng nếu mạng gặp sự cố.</span>
+      </li>
+      <li>
+        <div class="check-icon">✓</div>
+        <span><strong>Demo script 5 phút</strong> — Phân chia: (1) Giới thiệu painpoint, (2) Show live demo quán có seeding cao, (3) Show quán an toàn, (4) LLM Agent output, (5) Evidence cards.</span>
+      </li>
+      <li>
+        <div class="check-icon">✓</div>
+        <span><strong>Poster / slides</strong> — Problem → Solution → AI Integration (Augment) → Live Demo.</span>
+      </li>
+      <li>
+        <div class="check-icon">✓</div>
+        <span><strong>Dry run có bấm giờ</strong> — Đảm bảo &lt;5 phút trình bày.</span>
+      </li>
+      <li>
+        <div class="check-icon">✓</div>
+        <span><strong>Mỗi người trả lời được:</strong> "Augment — AI tăng cường phán đoán người dùng, không replace quyết định." | "Failure mode: false positive với reviewer mới + LLM hallucination." | "Phần mình làm: [xem phân công nhóm]."</span>
+      </li>
+      <li>
+        <div class="check-icon">✓</div>
+        <span><strong>Điện thoại đủ pin</strong> để điền form chấm điểm chéo.</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- VERDICT                                        -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="verdict">
+    <h2>🕵️‍♂️ TrustBite sẵn sàng demo</h2>
+    <p>
+      Bài toán thật · Data thật · AI thật · 3 điểm tích hợp AI trong product flow ·
+      Augment rõ ràng · Failure mode được xác định và có mitigation.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  TrustBite · Batch 02 · Day 06 Hackathon · 04/06/2026 · Zone 3 — Food &amp; Local Delivery
+</footer>
+
+</body>
+</html>
